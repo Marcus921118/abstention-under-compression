@@ -1,0 +1,10 @@
+# GGUF / llama.cpp quantization. bits + gguf_repo + gguf_file are set per run
+# (see `aq gguf --files`). extra.n_gpu_layers=0 => CPU (robust default).
+method: gguf
+bits: 4
+group_size: null
+gguf_repo: null
+gguf_file: null
+extra:
+  n_ctx: 4096        # logits_all buffer is n_ctx*vocab; 4096 avoids OOM on 16GB
+  n_gpu_layers: 0

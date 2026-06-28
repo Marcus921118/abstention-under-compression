@@ -1,0 +1,10 @@
+# Global defaults merged under every run (workflow §0.2).
+seed: 0
+batch_size: 8
+max_new_tokens: 256
+results_dir: results
+
+confidence:
+  methods: [verbalized, token_prob]   # semantic_entropy added in Stage 4
+  n_samples: 5
+  overconfidence_tau: 0.8

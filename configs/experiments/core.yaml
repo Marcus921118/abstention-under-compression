@@ -1,0 +1,31 @@
+# Core experiment matrix (proposal §5.1, workflow §3 Gate G3).
+# Resolved by scripts/run_matrix.sh into individual RunConfigs.
+#
+# 3 models x 2 quant methods x 4 bit-widths x (2 abstention sets + 1 control)
+# FP16 is the shared baseline for every model (bit-width 16).
+
+models:
+  - llama32_1b
+  - qwen25_15b
+  - phi3_mini
+
+quant_methods:
+  - gptq
+  - awq
+
+bit_widths: [16, 8, 4, 3]      # 2-bit is exploratory; add if method supports
+
+datasets:
+  - name: abstention_bench
+    split: test
+    max_samples: 1000
+  - name: medabstain
+    split: test
+    max_samples: 1000
+  - name: triviaqa             # answerable control
+    split: validation
+    max_samples: 1000
+
+notes: >
+  Vertical slice first (workflow §0.1): run llama32_1b x {fp16, gptq4} x
+  abstention_bench before expanding to the full grid.

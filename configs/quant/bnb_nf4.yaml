@@ -1,0 +1,6 @@
+method: bnb_nf4
+bits: 4
+group_size: null
+extra:
+  double_quant: true
+  compute_dtype: bfloat16

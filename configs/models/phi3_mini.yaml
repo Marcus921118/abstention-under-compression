@@ -1,0 +1,4 @@
+name: phi3_mini
+hf_id: microsoft/Phi-3-mini-4k-instruct
+family: phi
+params_b: 3.82

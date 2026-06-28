@@ -1,0 +1,73 @@
+{
+  "model": "qwen25_15b",
+  "dataset": "squad2",
+  "signal": "token_prob",
+  "kind": "bnb",
+  "n": 120,
+  "bits": [
+    16,
+    8,
+    4
+  ],
+  "results": {
+    "16": {
+      "abstention_f1": 0.09375000000000001,
+      "abstention_precision": 0.75,
+      "abstention_recall": 0.05,
+      "refuse_when_unanswerable_rate": 0.05,
+      "accuracy_on_answered": 0.711864406779661,
+      "over_confident_wrong_rate": 0.1896551724137931,
+      "n_total": 120,
+      "n_answerable": 60,
+      "n_answered_answerable": 59,
+      "auroc_conf_vs_correct": 0.5952380952380952,
+      "ece": 0.0950333006418775,
+      "brier": 0.20774755429280875,
+      "signal": "token_prob",
+      "path": "results/raw/qwen25_15b__fp1616__squad2__4d3c9302922f.jsonl"
+    },
+    "8": {
+      "abstention_f1": 0.09523809523809523,
+      "abstention_precision": 1.0,
+      "abstention_recall": 0.05,
+      "refuse_when_unanswerable_rate": 0.05,
+      "accuracy_on_answered": 0.6833333333333333,
+      "over_confident_wrong_rate": 0.21367521367521367,
+      "n_total": 120,
+      "n_answerable": 60,
+      "n_answered_answerable": 60,
+      "auroc_conf_vs_correct": 0.6290115532734275,
+      "ece": 0.14255725613768466,
+      "brier": 0.21482235403306865,
+      "signal": "token_prob",
+      "path": "results/raw/qwen25_15b__bnb_nf48__squad2__ccfad72b7688.jsonl"
+    },
+    "4": {
+      "abstention_f1": 0.06451612903225806,
+      "abstention_precision": 1.0,
+      "abstention_recall": 0.03333333333333333,
+      "refuse_when_unanswerable_rate": 0.03333333333333333,
+      "accuracy_on_answered": 0.2833333333333333,
+      "over_confident_wrong_rate": 0.3983050847457627,
+      "n_total": 120,
+      "n_answerable": 60,
+      "n_answered_answerable": 60,
+      "auroc_conf_vs_correct": 0.7578659370725034,
+      "ece": 0.4971884783135063,
+      "brier": 0.42329002802257665,
+      "signal": "token_prob",
+      "path": "results/raw/qwen25_15b__bnb_nf44__squad2__8a7b979b9f1d.jsonl"
+    }
+  },
+  "selective_damage": {
+    "abstention_f1_drop": 0.02923387096774195,
+    "accuracy_drop": 0.4285310734463277,
+    "selective_damage_index": 0.06821878920620073
+  },
+  "decoupling": {
+    "behaviour_rel_drop": 0.3118279569892474,
+    "signal_rel_drop": -0.2732147742818057,
+    "decoupling_index": 0.5850427312710531
+  },
+  "cliff_bits": 4.0
+}

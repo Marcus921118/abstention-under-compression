@@ -1,0 +1,73 @@
+{
+  "model": "qwen25_15b",
+  "dataset": "abstention_bench",
+  "signal": "token_prob",
+  "kind": "bnb",
+  "n": 600,
+  "bits": [
+    16,
+    8,
+    4
+  ],
+  "results": {
+    "16": {
+      "abstention_f1": 0.24444444444444444,
+      "abstention_precision": 0.7333333333333333,
+      "abstention_recall": 0.14666666666666667,
+      "refuse_when_unanswerable_rate": 0.14666666666666667,
+      "accuracy_on_answered": 0.323943661971831,
+      "over_confident_wrong_rate": 0.26296296296296295,
+      "n_total": 600,
+      "n_answerable": 300,
+      "n_answered_answerable": 284,
+      "auroc_conf_vs_correct": 0.6143002717391305,
+      "ece": 0.42584843744772694,
+      "brier": 0.3955344346373477,
+      "signal": "token_prob",
+      "path": "results/raw/qwen25_15b__fp1616__abstention_bench__7c136aa0a90d.jsonl"
+    },
+    "8": {
+      "abstention_f1": 0.23398328690807801,
+      "abstention_precision": 0.711864406779661,
+      "abstention_recall": 0.14,
+      "refuse_when_unanswerable_rate": 0.14,
+      "accuracy_on_answered": 0.303886925795053,
+      "over_confident_wrong_rate": 0.27726432532347506,
+      "n_total": 600,
+      "n_answerable": 300,
+      "n_answered_answerable": 283,
+      "auroc_conf_vs_correct": 0.6282611261952544,
+      "ece": 0.447528959310301,
+      "brier": 0.40579156108774894,
+      "signal": "token_prob",
+      "path": "results/raw/qwen25_15b__bnb_nf48__abstention_bench__c1023a36f172.jsonl"
+    },
+    "4": {
+      "abstention_f1": 0.2011834319526627,
+      "abstention_precision": 0.8947368421052632,
+      "abstention_recall": 0.11333333333333333,
+      "refuse_when_unanswerable_rate": 0.11333333333333333,
+      "accuracy_on_answered": 0.30405405405405406,
+      "over_confident_wrong_rate": 0.28291814946619215,
+      "n_total": 600,
+      "n_answerable": 300,
+      "n_answered_answerable": 296,
+      "auroc_conf_vs_correct": 0.7196871628910464,
+      "ece": 0.47321842461882774,
+      "brier": 0.4131594717794408,
+      "signal": "token_prob",
+      "path": "results/raw/qwen25_15b__bnb_nf44__abstention_bench__2df400216238.jsonl"
+    }
+  },
+  "selective_damage": {
+    "abstention_f1_drop": 0.04326101249178174,
+    "accuracy_drop": 0.01988960791777694,
+    "selective_damage_index": 2.1750560730317816
+  },
+  "decoupling": {
+    "behaviour_rel_drop": 0.1769768692845617,
+    "signal_rel_drop": -0.17155598979886116,
+    "decoupling_index": 0.34853285908342285
+  },
+  "cliff_bits": 8.0
+}

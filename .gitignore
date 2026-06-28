@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# envs
+.venv/
+venv/
+env/
+
+# tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# data + heavy artifacts (download via scripts/)
+data/
+*.gguf
+*.safetensors
+*.bin
+results/logs/
+results/raw/
+
+# node (only used by an offline doc helper)
+node_modules/
+package-lock.json
+
+# os
+.DS_Store
+Thumbs.db

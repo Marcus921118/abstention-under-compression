@@ -1,0 +1,4 @@
+name: qwen25_3b
+hf_id: Qwen/Qwen2.5-3B-Instruct
+family: qwen
+params_b: 3.09

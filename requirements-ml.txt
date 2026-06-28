@@ -1,0 +1,21 @@
+# Heavy ML stack for Stage 2+ (inference + quantization).
+#
+# IMPORTANT: install in a Python 3.10-3.12 virtual environment. As of this
+# project's setup the host runs Python 3.14, for which torch / auto-gptq /
+# autoawq / bitsandbytes wheels are not yet reliably available. The metrics,
+# protocol, config, and CLI selftest layers run fine on 3.14; only model
+# inference needs this stack.
+#
+# GPU target: single consumer card (RTX 5060, 8 GB). Use CUDA wheels matching
+# the installed driver. One model resident in VRAM at a time.
+
+torch
+transformers
+accelerate
+datasets
+auto-gptq
+autoawq
+bitsandbytes
+lm-polygraph
+# optional, closer to edge deployment:
+# llama-cpp-python

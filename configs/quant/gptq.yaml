@@ -1,0 +1,4 @@
+# bits overridden per matrix cell (8 / 4 / 3 / 2)
+method: gptq
+bits: 4
+group_size: 128
