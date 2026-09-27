@@ -1,0 +1,5 @@
+name: llama32_3b
+hf_id: meta-llama/Llama-3.2-3B-Instruct
+family: llama
+params_b: 3.21
+dtype: bfloat16

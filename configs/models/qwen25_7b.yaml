@@ -1,0 +1,4 @@
+name: qwen25_7b
+hf_id: Qwen/Qwen2.5-7B-Instruct
+family: qwen
+params_b: 7.62

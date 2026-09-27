@@ -108,7 +108,11 @@ def _make_record(
         out = mcqa_outcome(text, s.meta.get("gold_letter", ""), s.meta.get("abstain_letter", "D"))
         abstained, correct = out["abstained"], out["correct"]
     else:
-        abstained = is_abstention(text, abstain_option_tokens=s.meta.get("abstain_option_tokens"))
+        abstained = is_abstention(
+            text,
+            abstain_option_tokens=s.meta.get("abstain_option_tokens"),
+            gold_answers=s.gold_answers,
+        )
         correct = is_correct(text, s.gold_answers) if (s.answerable and not abstained) else None
     mean_lp = (sum(token_logprobs) / len(token_logprobs)) if token_logprobs else None
     return GenerationRecord(
@@ -164,38 +168,115 @@ def _run_hf(
     torch.manual_seed(cfg.seed)
     model, tokenizer = load_model(cfg)
     device = next(model.parameters()).device
-    # Cap prompts at the model's context window (e.g. Phi-3-mini-4k = 4096) so
-    # long AbstentionBench items don't overflow positional embeddings.
     max_ctx = int(getattr(model.config, "max_position_embeddings", 4096) or 4096)
-    # We truncate input_ids ourselves below, so silence the tokenizer's noisy
-    # "sequence longer than max length" notice emitted during apply_chat_template.
     tokenizer.model_max_length = max(int(tokenizer.model_max_length or 0), 10 ** 7)
+    bs = max(1, cfg.batch_size)
     records: list[GenerationRecord] = []
     try:
-        for idx, s in enumerate(samples):
-            input_ids, attention_mask = _build_inputs(
+        if bs > 1:
+            records = _run_hf_batched(
+                model, tokenizer, device, cfg, samples, run_id, verbose, bs, max_ctx)
+        else:
+            for idx, s in enumerate(samples):
+                input_ids, attention_mask = _build_inputs(
+                    tokenizer, s.question, device,
+                    max_ctx=max_ctx, max_new_tokens=cfg.max_new_tokens,
+                )
+                input_len = input_ids.shape[1]
+                with torch.no_grad():
+                    out = model.generate(
+                        input_ids=input_ids, attention_mask=attention_mask,
+                        max_new_tokens=cfg.max_new_tokens, do_sample=False,
+                        return_dict_in_generate=True, output_scores=True,
+                        pad_token_id=tokenizer.pad_token_id,
+                    )
+                gen_ids = out.sequences[0, input_len:]
+                text = tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
+                trans = model.compute_transition_scores(
+                    out.sequences, out.scores, normalize_logits=True
+                )[0]
+                token_logprobs = [float(x) for x in trans.tolist() if x == x and x != float("-inf")]
+                records.append(_make_record(run_id, s, text, token_logprobs))
+                if verbose and (idx + 1) % 5 == 0:
+                    print(f"  [{idx + 1}/{len(samples)}] done")
+    finally:
+        release_model(model)
+    return records
+
+
+def _run_hf_batched(model, tokenizer, device, cfg, samples, run_id, verbose, bs, max_ctx):
+    """Batched generation: left-pad inputs, generate in chunks of bs."""
+    import torch  # noqa: PLC0415
+
+    orig_side = tokenizer.padding_side
+    tokenizer.padding_side = "left"
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    records = []
+    n = len(samples)
+    for batch_start in range(0, n, bs):
+        batch_end = min(batch_start + bs, n)
+        batch_samples = samples[batch_start:batch_end]
+        cur_bs = len(batch_samples)
+
+        all_ids = []
+        for s in batch_samples:
+            ids, _ = _build_inputs(
                 tokenizer, s.question, device,
                 max_ctx=max_ctx, max_new_tokens=cfg.max_new_tokens,
             )
-            input_len = input_ids.shape[1]
-            with torch.no_grad():
-                out = model.generate(
-                    input_ids=input_ids, attention_mask=attention_mask,
-                    max_new_tokens=cfg.max_new_tokens, do_sample=False,
-                    return_dict_in_generate=True, output_scores=True,
-                    pad_token_id=tokenizer.pad_token_id,
-                )
-            gen_ids = out.sequences[0, input_len:]
+            all_ids.append(ids.squeeze(0))
+
+        max_len = max(t.shape[0] for t in all_ids)
+        pad_id = tokenizer.pad_token_id
+        padded = torch.full((cur_bs, max_len), pad_id, dtype=all_ids[0].dtype, device=device)
+        attn = torch.zeros((cur_bs, max_len), dtype=torch.long, device=device)
+        input_lens = []
+        for i, ids in enumerate(all_ids):
+            seq_len = ids.shape[0]
+            padded[i, max_len - seq_len:] = ids
+            attn[i, max_len - seq_len:] = 1
+            input_lens.append(seq_len)
+
+        with torch.no_grad():
+            out = model.generate(
+                input_ids=padded, attention_mask=attn,
+                max_new_tokens=cfg.max_new_tokens, do_sample=False,
+                return_dict_in_generate=True, output_scores=True,
+                pad_token_id=pad_id,
+            )
+
+        seqs = out.sequences.cpu()
+        scores_cpu = tuple(s.cpu() for s in out.scores)
+        del out
+        torch.cuda.empty_cache()
+
+        for i in range(cur_bs):
+            gen_ids = seqs[i, max_len:]
+            eos_mask = gen_ids != pad_id
+            if tokenizer.eos_token_id is not None:
+                eos_pos = (gen_ids == tokenizer.eos_token_id).nonzero(as_tuple=True)[0]
+                if len(eos_pos) > 0:
+                    eos_mask[eos_pos[0] + 1:] = False
+            gen_ids = gen_ids[eos_mask]
             text = tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
-            trans = model.compute_transition_scores(
-                out.sequences, out.scores, normalize_logits=True
+
+            seq_i = seqs[i:i+1]
+            scores_i = tuple(s[i:i+1] for s in scores_cpu)
+            trans_i = model.compute_transition_scores(
+                seq_i, scores_i, normalize_logits=True
             )[0]
-            token_logprobs = [float(x) for x in trans.tolist() if x == x and x != float("-inf")]
-            records.append(_make_record(run_id, s, text, token_logprobs))
-            if verbose and (idx + 1) % 5 == 0:
-                print(f"  [{idx + 1}/{len(samples)}] done")
-    finally:
-        release_model(model)
+            n_gen = gen_ids.shape[0]
+            token_logprobs = [float(x) for x in trans_i.tolist()[:n_gen]
+                              if x == x and x != float("-inf")]
+            records.append(_make_record(run_id, batch_samples[i], text, token_logprobs))
+
+        del seqs, scores_cpu
+        if verbose:
+            print(f"  [{batch_end}/{n}] done (batch={cur_bs})")
+
+    tokenizer.padding_side = orig_side
     return records
 
 

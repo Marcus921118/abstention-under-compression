@@ -18,14 +18,18 @@ env/
 .ipynb_checkpoints/
 
 # data + heavy artifacts (download via scripts/)
-data/
+/data/
 *.gguf
 *.safetensors
 *.bin
 results/logs/
 results/raw/
 
-# node (only used by an offline doc helper)
+# raw evaluation outputs
+results/eval_large/
+*.jsonl
+
+# node
 node_modules/
 package-lock.json
 

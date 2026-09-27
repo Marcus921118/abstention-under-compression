@@ -1,0 +1,3 @@
+method: fp16
+bits: 16
+group_size: null

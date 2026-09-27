@@ -21,10 +21,13 @@ class ModelConfig(BaseModel):
     hf_id: str                      # huggingface repo id
     family: str = "unknown"
     params_b: float = 0.0           # parameter count in billions
+    dtype: str = "float16"          # base dtype for fp16 baseline; Gemma-3 needs "bfloat16"
+                                    # (trained in bf16, float16 causes logit collapse → empty output)
 
 
 class QuantConfig(BaseModel):
-    method: Literal["fp16", "gptq", "awq", "bnb_nf4", "gguf"]
+    method: Literal["fp16", "gptq", "awq", "bnb_nf4", "bnb_fp4", "gguf",
+                    "hqq", "autoround", "spqr", "rtn"]
     bits: int = 16                  # nominal bit-width label (16,8,6,5,4,3,2)
     group_size: int | None = 128
     gguf_repo: str | None = None    # HF repo holding GGUF files (method=gguf)
@@ -44,6 +47,8 @@ class DataConfig(BaseModel):
     split: str = "test"
     max_samples: int | None = None  # None = all
     subset: str | None = None
+    seed: int = 0  # dataset-sampling seed (independent of RunConfig.seed,
+                   # which torch.manual_seed()s the generation itself)
 
 
 class ConfidenceConfig(BaseModel):
@@ -74,7 +79,8 @@ class RunConfig(BaseModel):
                       "g": self.quant.group_size, "e": self.quant.extra,
                       "gf": self.quant.gguf_file},
             "data": {"n": self.data.name, "s": self.data.split,
-                     "max": self.data.max_samples, "sub": self.data.subset},
+                     "max": self.data.max_samples, "sub": self.data.subset,
+                     "dseed": self.data.seed},
             "conf": sorted(self.confidence.methods),
             "seed": self.seed,
             "max_new_tokens": self.max_new_tokens,

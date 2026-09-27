@@ -43,9 +43,14 @@ def mcqa_outcome(text: str, gold_letter: str, abstain_letter: str) -> dict:
 
     correct is None when the item is abstained or has no gold content answer.
     """
+    from .abstain import is_abstention  # noqa: PLC0415
+
     choice = extract_choice(text)
-    abstained = choice == abstain_letter
+    if choice == abstain_letter:
+        return {"choice": choice, "abstained": True, "correct": None}
+    if choice is None and is_abstention(text):
+        return {"choice": None, "abstained": True, "correct": None}
     correct = None
-    if not abstained and gold_letter != abstain_letter:
+    if gold_letter != abstain_letter:
         correct = choice is not None and choice == gold_letter
-    return {"choice": choice, "abstained": abstained, "correct": correct}
+    return {"choice": choice, "abstained": False, "correct": correct}

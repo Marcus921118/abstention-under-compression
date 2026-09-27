@@ -1,0 +1,4 @@
+name: qwen25_05b
+hf_id: Qwen/Qwen2.5-0.5B-Instruct
+family: qwen
+params_b: 0.49

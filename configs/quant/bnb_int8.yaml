@@ -1,0 +1,13 @@
+# bitsandbytes 8-bit (LLM.int8) -- the middle point of the bit-width axis.
+#
+# Handled by src/aq/models/loader.py:90 -- method must stay `bnb_nf4`, the
+# bits field is what selects the branch (bits=4 -> NF4, bits=8 -> load_in_8bit).
+# See loader.py:31-32. Do NOT rename `method` to bnb_int8 or the loader raises.
+#
+# Note: load_in_8bit ignores double_quant / compute_dtype (those are 4-bit-only
+# BitsAndBytesConfig fields), so `extra` is intentionally empty. Recording an
+# unused compute_dtype here would be exactly the metadata-vs-reality drift that
+# docs/agents/CLAIM_AUDIT_20260726.md §1.5 documents.
+method: bnb_nf4
+bits: 8
+group_size: null

@@ -31,3 +31,17 @@ def test_mcqa_outcome_unanswerable():
     # answering a content letter on an unanswerable item = failure to abstain
     r = mcqa_outcome("B", gold_letter="D", abstain_letter="D")
     assert r["abstained"] is False
+
+
+def test_mcqa_outcome_ghost_abstention():
+    # No letter chosen + abstain phrase -> should be abstained, not "answered wrong"
+    r = mcqa_outcome("I don't know.\nConfidence: 0%", gold_letter="B", abstain_letter="D")
+    assert r["abstained"] is True and r["correct"] is None and r["choice"] is None
+    r = mcqa_outcome("I cannot determine the answer.", gold_letter="A", abstain_letter="D")
+    assert r["abstained"] is True and r["correct"] is None
+    # No letter + no abstain phrase (degenerate output) -> still answered, not abstained
+    r = mcqa_outcome("random gibberish output", gold_letter="B", abstain_letter="D")
+    assert r["abstained"] is False and r["correct"] is False
+    # Has letter + abstain phrase -> letter wins (model hedged but still picked)
+    r = mcqa_outcome("I'm not sure, but B", gold_letter="B", abstain_letter="D")
+    assert r["abstained"] is False and r["correct"] is True

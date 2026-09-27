@@ -1,0 +1,8 @@
+# HQQ — 第二個 round-to-nearest 量化實作(量化器軸,2026-08-02)
+# group_size 是與 bnb 不可直接對齊的自由度,判準須寫死;此處僅為預設。
+method: hqq
+bits: 4
+group_size: 64
+extra:
+  axis: 1
+  compute_dtype: bfloat16

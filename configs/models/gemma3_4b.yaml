@@ -1,0 +1,5 @@
+name: gemma3_4b
+hf_id: google/gemma-3-4b-it
+family: gemma
+params_b: 4.30
+dtype: bfloat16  # Gemma-3 trained in bf16; float16 causes logit collapse → empty output

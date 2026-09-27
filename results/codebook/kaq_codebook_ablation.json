@@ -1,0 +1,123 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "n_groups": 10235904,
+  "baseline_mse": 7.732182017488089e-06,
+  "universal_codebook": [
+    -0.9249028423602164,
+    -0.708360420008507,
+    -0.5524581168924233,
+    -0.4264144177370779,
+    -0.31768609944447496,
+    -0.21954510765876042,
+    -0.12833361244910946,
+    -0.041235178685480635,
+    0.04466983766815327,
+    0.13204300806276992,
+    0.22342524801729796,
+    0.3210764901214826,
+    0.4288848311625926,
+    0.5544065044410801,
+    0.7100326176537454,
+    0.9248741740368607
+  ],
+  "results": [
+    {
+      "strategy": "absmax + NF4 (baseline)",
+      "mse": 7.732182017488089e-06,
+      "improvement_pct": 0.0
+    },
+    {
+      "strategy": "absmax + universal custom",
+      "mse": 7.250520024599419e-06,
+      "improvement_pct": 6.2293
+    },
+    {
+      "strategy": "absmax + kappa-binned custom (4 bins)",
+      "mse": 6.994164925234041e-06,
+      "improvement_pct": 9.5447
+    },
+    {
+      "strategy": "clip 99.7% + NF4",
+      "mse": 7.743765485624783e-06,
+      "improvement_pct": -0.1498
+    },
+    {
+      "strategy": "clip 99.8% + NF4",
+      "mse": 7.660759401395826e-06,
+      "improvement_pct": 0.9237
+    },
+    {
+      "strategy": "clip 99.85% + NF4",
+      "mse": 7.64821346598998e-06,
+      "improvement_pct": 1.086
+    },
+    {
+      "strategy": "clip 99.9% + NF4",
+      "mse": 7.65572948102759e-06,
+      "improvement_pct": 0.9888
+    },
+    {
+      "strategy": "clip 99.95% + NF4",
+      "mse": 7.683670720766798e-06,
+      "improvement_pct": 0.6274
+    },
+    {
+      "strategy": "clip 99.7% + universal custom",
+      "mse": 7.5402477828597835e-06,
+      "improvement_pct": 2.4823
+    },
+    {
+      "strategy": "clip 99.8% + universal custom",
+      "mse": 7.373723896230066e-06,
+      "improvement_pct": 4.6359
+    },
+    {
+      "strategy": "clip 99.85% + universal custom",
+      "mse": 7.316550111219034e-06,
+      "improvement_pct": 5.3754
+    },
+    {
+      "strategy": "clip 99.9% + universal custom",
+      "mse": 7.276851359965967e-06,
+      "improvement_pct": 5.8888
+    },
+    {
+      "strategy": "clip 99.95% + universal custom",
+      "mse": 7.254790949395368e-06,
+      "improvement_pct": 6.1741
+    },
+    {
+      "strategy": "clip 99.7% + kappa-binned custom",
+      "mse": 7.330712019521119e-06,
+      "improvement_pct": 5.1922
+    },
+    {
+      "strategy": "clip 99.8% + kappa-binned custom",
+      "mse": 7.146915546665717e-06,
+      "improvement_pct": 7.5692
+    },
+    {
+      "strategy": "clip 99.85% + kappa-binned custom",
+      "mse": 7.081630748039465e-06,
+      "improvement_pct": 8.4136
+    },
+    {
+      "strategy": "clip 99.9% + kappa-binned custom",
+      "mse": 7.03428414197915e-06,
+      "improvement_pct": 9.0259
+    },
+    {
+      "strategy": "clip 99.95% + kappa-binned custom",
+      "mse": 7.004988108386732e-06,
+      "improvement_pct": 9.4048
+    }
+  ],
+  "best_per_category": {
+    "NF4 only": 7.732182017488089e-06,
+    "universal codebook": 7.250520024599419e-06,
+    "kappa-binned codebook": 6.994164925234041e-06,
+    "clip+NF4": 7.64821346598998e-06,
+    "clip+universal": 7.254790949395368e-06,
+    "clip+kappa-binned": 7.004988108386732e-06
+  }
+}
