@@ -2,7 +2,7 @@
 
 Quantized LLMs get more overconfident, but the internal signal that separates right from wrong answers survives compression well. This repo is my attempt to pin that gap down and fix it from the codebook side.
 
-Independent research, started Jan 2026. Still in progress.
+Independent research, started 2026. Still in progress.
 
 ## What this is about
 
